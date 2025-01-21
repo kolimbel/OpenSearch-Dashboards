@@ -672,6 +672,18 @@ export function getUiSettings(): Record<string, UiSettingsParams<unknown>> {
         })
       ),
     },
+    [UI_SETTINGS.ENABLE_SUPER_DATE_PICKER]: {
+      name: i18n.translate('data.advancedSettings.enableSuperDatePickerTitle', {
+        defaultMessage: 'Enable SuperDatePicker component',
+      }),
+      value: true,
+      description: i18n.translate('data.advancedSettings.enableSuperDatePickerText', {
+        defaultMessage:
+          'Enable the Super Date Picker in the query top bar for advanced date selection. When disabled, the simpler Date Range Picker is used instead.',
+      }),
+      schema: schema.boolean(),
+      category: ['appearance'],
+    },
     [UI_SETTINGS.INDEXPATTERN_PLACEHOLDER]: {
       name: i18n.translate('data.advancedSettings.indexPatternPlaceholderTitle', {
         defaultMessage: 'Index pattern placeholder',
