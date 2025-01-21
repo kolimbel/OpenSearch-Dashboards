@@ -40,6 +40,8 @@ import {
   EuiLink,
   EuiSuperDatePicker,
   EuiFieldText,
+  EuiDatePickerRange,
+  EuiDatePicker,
   prettyDuration,
 } from '@elastic/eui';
 // @ts-ignore
@@ -47,6 +49,7 @@ import { EuiSuperUpdateButton, OnRefreshProps } from '@elastic/eui';
 import { FormattedMessage } from '@osd/i18n/react';
 import { Toast } from 'src/core/public';
 import { isEqual, compact } from 'lodash';
+import moment, { Moment } from 'moment';
 import { IDataPluginServices, IIndexPattern, TimeRange, TimeHistoryContract, Query } from '../..';
 import {
   useOpenSearchDashboards,
@@ -123,6 +126,39 @@ export default function QueryBarTopRow(props: QueryBarTopRowProps) {
         : undefined,
     [appName, queryLanguage, uiSettings, storage]
   );
+
+  const [startDate, setStartDate] = useState<Moment | null>(
+    props.dateRangeFrom ? moment(dateMath.parse(props.dateRangeFrom)) : null
+  );
+  const [endDate, setEndDate] = useState<Moment | null>(
+    props.dateRangeTo ? moment(dateMath.parse(props.dateRangeTo)) : null
+  );
+
+  function handleStartDateChange(date: Moment | null) {
+    setStartDate(date);
+
+    if (date && endDate) {
+      onTimeChange({
+        start: date.toISOString(),
+        end: endDate.toISOString(),
+        isInvalid: false,
+        isQuickSelection: false,
+      });
+    }
+  }
+
+  function handleEndDateChange(date: Moment | null) {
+    setEndDate(date);
+
+    if (startDate && date) {
+      onTimeChange({
+        start: startDate.toISOString(),
+        end: date.toISOString(),
+        isInvalid: false,
+        isQuickSelection: false,
+      });
+    }
+  }
 
   function onClickSubmitButton(event: React.MouseEvent<HTMLButtonElement>) {
     if (persistedLog && props.query) {
@@ -334,11 +370,7 @@ export default function QueryBarTopRow(props: QueryBarTopRowProps) {
     );
   }
 
-  function renderDatePicker() {
-    if (!shouldRenderDatePicker()) {
-      return null;
-    }
-
+  function renderSuperDatePicker() {
     let recentlyUsedRanges;
     if (props.timeHistory) {
       recentlyUsedRanges = props.timeHistory
@@ -361,6 +393,65 @@ export default function QueryBarTopRow(props: QueryBarTopRowProps) {
         };
       });
 
+    return (
+      <EuiSuperDatePicker
+        start={props.dateRangeFrom}
+        end={props.dateRangeTo}
+        isPaused={props.isRefreshPaused}
+        refreshInterval={props.refreshInterval}
+        onTimeChange={onTimeChange}
+        onRefresh={onRefresh}
+        onRefreshChange={props.onRefreshChange}
+        showUpdateButton={false}
+        recentlyUsedRanges={recentlyUsedRanges}
+        commonlyUsedRanges={commonlyUsedRanges}
+        dateFormat={uiSettings!.get('dateFormat')}
+        isAutoRefreshOnly={props.showAutoRefreshOnly}
+        className="osdQueryBar__datePicker"
+      />
+    );
+  }
+
+  function renderDatePickerRange() {
+    return (
+      <EuiDatePickerRange
+        startDateControl={
+          <EuiDatePicker
+            selected={startDate}
+            onChange={handleStartDateChange}
+            startDate={startDate}
+            endDate={endDate}
+            dateFormat={uiSettings!.get('dateFormat')}
+            isInvalid={!!startDate && !!endDate && startDate.isAfter(endDate)}
+            showTimeSelect
+            timeFormat={uiSettings!.get('timeFormat')}
+            locale={uiSettings!.get('dateLocale')}
+          />
+        }
+        endDateControl={
+          <EuiDatePicker
+            selected={endDate}
+            onChange={handleEndDateChange}
+            startDate={startDate}
+            endDate={endDate}
+            dateFormat={uiSettings!.get('dateFormat')}
+            isInvalid={!!startDate && !!endDate && startDate.isAfter(endDate)}
+            showTimeSelect
+            timeFormat={uiSettings!.get('timeFormat')}
+            locale={uiSettings!.get('dateLocale')}
+          />
+        }
+      />
+    );
+  }
+
+  function renderDatePicker() {
+    if (!shouldRenderDatePicker()) {
+      return null;
+    }
+
+    const useSuperDatePicker = uiSettings!.get(UI_SETTINGS.ENABLE_SUPER_DATE_PICKER);
+
     const wrapperClasses = classNames('osdQueryBar__datePickerWrapper', {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       'osdQueryBar__datePickerWrapper-isHidden': isQueryInputFocused,
@@ -368,21 +459,7 @@ export default function QueryBarTopRow(props: QueryBarTopRowProps) {
 
     return (
       <EuiFlexItem className={wrapperClasses}>
-        <EuiSuperDatePicker
-          start={props.dateRangeFrom}
-          end={props.dateRangeTo}
-          isPaused={props.isRefreshPaused}
-          refreshInterval={props.refreshInterval}
-          onTimeChange={onTimeChange}
-          onRefresh={onRefresh}
-          onRefreshChange={props.onRefreshChange}
-          showUpdateButton={false}
-          recentlyUsedRanges={recentlyUsedRanges}
-          commonlyUsedRanges={commonlyUsedRanges}
-          dateFormat={uiSettings!.get('dateFormat')}
-          isAutoRefreshOnly={props.showAutoRefreshOnly}
-          className="osdQueryBar__datePicker"
-        />
+        {useSuperDatePicker ? renderSuperDatePicker() : renderDatePickerRange()}
       </EuiFlexItem>
     );
   }
