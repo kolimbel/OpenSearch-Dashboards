@@ -175,5 +175,44 @@ export const getDateFormatSettings = (): Record<string, UiSettingsParams> => {
       }),
       schema: schema.string(),
     },
+    timeFormat: {
+      name: i18n.translate('core.ui_settings.params.timeFormatTitle', {
+        defaultMessage: 'Time format',
+      }),
+      value: 'HH:mm',
+      description: i18n.translate('core.ui_settings.params.timeFormatText', {
+        defaultMessage: 'When displaying a pretty formatted time, use this {formatLink}',
+        values: {
+          formatLink:
+            '<a href="https://momentjs.com/docs/#/displaying/format/" target="_blank" rel="noopener noreferrer">' +
+            i18n.translate('core.ui_settings.params.timeFormat.optionsLinkText', {
+              defaultMessage: 'format',
+            }) +
+            '</a>',
+        },
+      }),
+      schema: schema.string(),
+      category: ['appearance'],
+    },
+    dateLocale: {
+      name: i18n.translate('core.ui_settings.params.dateLocaleTitle', {
+        defaultMessage: 'Date locale',
+      }),
+      value: 'en',
+      description: i18n.translate('core.ui_settings.params.dateLocaleText', {
+        defaultMessage:
+          'Select the locale for date formatting. Learn more about the supported {formatLink}.',
+        values: {
+          formatLink:
+            '<a href="https://en.wikipedia.org/wiki/Date_format_by_country" target="_blank" rel="noopener noreferrer">' +
+            i18n.translate('core.ui_settings.params.dateLocale.optionsLinkText', {
+              defaultMessage: 'format',
+            }) +
+            '</a>',
+        },
+      }),
+      schema: schema.string(),
+      category: ['appearance'],
+    },
   };
 };
