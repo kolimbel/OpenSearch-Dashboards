@@ -33,7 +33,11 @@ import { schema } from '@osd/config-schema';
 import { CoreSetup, Plugin, PluginInitializerContext } from 'opensearch-dashboards/server';
 import { createRoutes } from './routes/create_routes';
 import { url } from './saved_objects';
-import { CSV_SEPARATOR_SETTING, CSV_QUOTE_VALUES_SETTING } from '../common/constants';
+import {
+  CSV_SEPARATOR_SETTING,
+  CSV_QUOTE_VALUES_SETTING,
+  PDF_FONT_SIZE,
+} from '../common/constants';
 
 export class SharePlugin implements Plugin {
   constructor(private readonly initializerContext: PluginInitializerContext) {}
@@ -61,6 +65,13 @@ export class SharePlugin implements Plugin {
           defaultMessage: 'Should values be quoted in csv exports?',
         }),
         schema: schema.boolean(),
+      },
+      [PDF_FONT_SIZE]: {
+        name: i18n.translate('share.advancedSettings.pdf.fontSizeTitle', {
+          defaultMessage: 'Font size',
+        }),
+        value: 8.5,
+        schema: schema.number(),
       },
     });
   }

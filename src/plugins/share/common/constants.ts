@@ -30,3 +30,4 @@
 
 export const CSV_SEPARATOR_SETTING = 'csv:separator';
 export const CSV_QUOTE_VALUES_SETTING = 'csv:quoteValues';
+export const PDF_FONT_SIZE = 'pdf:fontSize';

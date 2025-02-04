@@ -31,7 +31,11 @@
 import { PluginInitializerContext } from '../../../core/server';
 import { SharePlugin } from './plugin';
 
-export { CSV_QUOTE_VALUES_SETTING, CSV_SEPARATOR_SETTING } from '../common/constants';
+export {
+  CSV_QUOTE_VALUES_SETTING,
+  CSV_SEPARATOR_SETTING,
+  PDF_FONT_SIZE,
+} from '../common/constants';
 
 export function plugin(initializerContext: PluginInitializerContext) {
   return new SharePlugin(initializerContext);
