@@ -6,7 +6,8 @@
 var fs = require('fs');
 var path = require('path');
 
-var FONT_PATH = path.join(__dirname, '../assets/Roboto-Regular.ttf');
+var fontFileName = process.argv[2];
+var FONT_PATH = path.join(__dirname, '../assets', fontFileName);
 var OUTPUT_PATH = path.join(__dirname, '../src/plugins/pdf_export/fonts/font_base64.ts');
 
 if (!fs.existsSync(FONT_PATH)) {
