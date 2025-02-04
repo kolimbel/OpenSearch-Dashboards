@@ -55,6 +55,11 @@ export const TableVisControl = (props: TableVisControlProps) => {
               defaultMessage: 'Formatted CSV',
             })}
           </EuiContextMenuItem>,
+          <EuiContextMenuItem key="pdf" onClick={() => exportAsPdf({ ...props, uiSettings })}>
+            {i18n.translate('visTypeTable.tableVisExport.pdf', {
+              defaultMessage: 'PDF',
+            })}
+          </EuiContextMenuItem>,
         ]}
       />
     </EuiPopover>
