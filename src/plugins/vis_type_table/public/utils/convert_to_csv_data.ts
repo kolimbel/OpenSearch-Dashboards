@@ -29,6 +29,7 @@
  */
 
 import { isObject } from 'lodash';
+import { i18n } from '@osd/i18n';
 // @ts-ignore
 import { saveAs } from '@elastic/filesaver';
 import { CoreStart } from 'opensearch-dashboards/public';
@@ -44,6 +45,7 @@ interface CSVDataProps {
   rows: OpenSearchDashboardsDatatable['rows'];
   columns: FormattedColumn[];
   uiSettings: CoreStart['uiSettings'];
+  generationTimestamp: string;
 }
 
 export const toCsv = function (formatted: boolean, { rows, columns, uiSettings }: CSVDataProps) {
@@ -79,7 +81,10 @@ export const toCsv = function (formatted: boolean, { rows, columns, uiSettings }
 
 export const exportAsCsv = function (formatted: boolean, csvData: CSVDataProps) {
   const csv = new Blob([toCsv(formatted, csvData)], { type: 'text/csv;charset=utf-8' });
-  const type = formatted ? 'formatted' : 'raw';
-  if (csvData.filename) saveAs(csv, `${csvData.filename}-${type}.csv`);
-  else saveAs(csv, `unsaved-${type}.csv`);
+  const type = formatted
+    ? i18n.translate('export.csv.formatted', { defaultMessage: 'formatted' })
+    : i18n.translate('export.csv.raw', { defaultMessage: 'raw' });
+  if (csvData.filename)
+    saveAs(csv, `${csvData.filename}-${type}_${csvData.generationTimestamp}.csv`);
+  else saveAs(csv, `unsaved-${type}_${csvData.generationTimestamp}.csv`);
 };

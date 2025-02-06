@@ -16,7 +16,9 @@ interface PDFDataProps {
   filename?: string;
   rows: OpenSearchDashboardsDatatable['rows'];
   columns: FormattedColumn[];
+  reportTitle: string;
   uiSettings: CoreStart['uiSettings'];
+  generationTimestamp: string;
 }
 
 const generateTableData = (
@@ -62,12 +64,12 @@ const finalizeTotalPages = (pdf: jsPDF, totalPagesExp: string) => {
 
 export const toPdf = (
   formatted: boolean,
-  { filename = '', rows, columns, uiSettings }: PDFDataProps
+  { filename, rows, columns, reportTitle = '', uiSettings }: PDFDataProps
 ): jsPDF => {
   const pdf = new jsPDF('landscape');
   const fontSize = uiSettings.get(PDF_FONT_SIZE);
 
-  configurePDF(pdf, filename, reportFont, fontSize);
+  configurePDF(pdf, reportTitle, reportFont, fontSize);
   const totalPagesExp = '{t_p}';
 
   autoTable(pdf, {
@@ -85,6 +87,7 @@ export const toPdf = (
 
 export const exportAsPdf = function (pdfData: PDFDataProps) {
   const pdf = toPdf(true, pdfData);
-  const filename = pdfData.filename || 'unsaved-data.pdf';
-  pdf.save(filename);
+
+  if (pdfData.filename) pdf.save(`${pdfData.filename}_${pdfData.generationTimestamp}`);
+  else pdf.save(`unsaved_data_${pdfData.generationTimestamp}`);
 };
